@@ -13,6 +13,7 @@ var listSchema = mongoose.Schema({
  text : String,
  task : String,
  dateA : String,
+ dateC: String
 });
 
 var List = mongoose.model("elements", listSchema);
@@ -36,9 +37,10 @@ app.post("/list", async function(req, res) {
   var task = req.body.task;
   //var dateA = new Date(req.body.dateA);
   var dateA = req.body.dateA;
+  var dateC = req.body.dateC;
   console.log(text);
 try {
-    var doc = await List.create({text:text, task: task, dateA : dateA});
+    var doc = await List.create({text:text, task: task, dateA : dateA, dateC: dateC});
     res.json({id:doc._id});
   } catch(err) {
     console.error(err);
@@ -60,13 +62,25 @@ app.get("/list", async function(req, res) {
 // modifying an element in the list
 app.put("/list", async function(req, res) {
   try {
-    var id = req.body.id;
-    var text = req.body.text;
-    var task = req.body.task;
-    //var dateA = new Date(req.body.dateA);
-    var dateA = req.body.dateA;
-    
-    await List.updateOne({ _id: id }, { text: text , task: task, dateA: dateA}).exec();
+    const id = req.body.id;
+    const updateFields = {};
+
+    // Check and update specific fields based on what is received from the client
+    if (req.body.text) {
+      updateFields.text = req.body.text;
+    }
+    if (req.body.task) {
+      updateFields.task = req.body.task;
+    }
+    if (req.body.dateA) {
+      updateFields.dateA = req.body.dateA;
+    }
+    if (req.body.dateC) {
+      updateFields.dateC = req.body.dateC;
+    }
+
+    // Update the document with the dynamically constructed fields
+    await List.updateOne({ _id: id }, updateFields).exec();
     res.send(); // close the connection to the browser
   } catch (err) {
     console.error(err);
