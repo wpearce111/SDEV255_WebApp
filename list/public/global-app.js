@@ -14,7 +14,7 @@ const GlobalApp = {
     <ul>
       <Element v-for="(element, index) in elements" 
        :key="index" :element="element"
-        @remove="remove($event)" @modify="modify($event)" @task="task($event)" @dateA="dateA($event)"
+        @remove="remove($event)" @modify="modify($event)" @task="task($event)" @dateA="dateA($event)" @dateC="dateC($event)"
       />
     </ul>
   `,
@@ -22,12 +22,14 @@ const GlobalApp = {
     async add() {
       var defaultTitle = "Element " + (this.elements.length + 1);
       var defaultTaskDescription = "Enter task description";
-      var defaultDateText = "mm/dd/yyyy";
+      var defaultDateAText = "mm/dd/yyyy";
+      var defaultDateCText = "mm/dd/yyyy";
       try {
         const response = await axios.post("/list", { 
           text: defaultTitle, 
           task: defaultTaskDescription,
-          dateA: defaultDateText 
+          dateA: defaultDateAText,
+          dateC: defaultDateCText 
         });
 
         console.log(this.elements);
@@ -35,7 +37,8 @@ const GlobalApp = {
           _id: response.data.id,
           text: defaultTitle, 
           task: defaultTaskDescription,
-          dateA: defaultDateText
+          dateA: defaultDateAText,
+          dateC: defaultDateCText
         });
 
       } catch (err) {
@@ -57,50 +60,21 @@ const GlobalApp = {
     modify(params) {
       var id = params.id;
       var value = params.value;
+      var field = params.field;
       // modify the title of the element with this id in the
       // elements array
 
       this.elements = this.elements.map(function (element) {
         if (element._id == id) {
-          element.text = value;
+          element[field] = value;
           return element;
         } else return element;
       });
-      // modify the text of the element having this 
-      // identifier
-      axios.put("/list", {text:value, id:id});
-    },
-    task(params) {
-      var id = params.id;
-      var value = params.value;
-      // modify the task of the element with this id in the
-      // elements array
 
-      this.elements = this.elements.map(function (element) {
-        if (element._id == id) {
-          element.task = value;
-          return element;
-        } else return element;
-      });
-      // modify the text of the element having this 
-      // identifier
-      axios.put("/list", {id:id, task:value});
-    },
-    dateA(params) {
-      var id = params.id;
-      var value = params.value;
-      // modify the dateAssigned of the element with this id in the
-      // elements array
+      const data = { id: id };
+      data[field] = value;
 
-      this.elements = this.elements.map(function (element) {
-        if (element._id == id) {
-          element.dateA = value;
-          return element;
-        } else return element;
-      });
-      // modify the text of the element having this 
-      // identifier
-      axios.put("/list", {id:id, dateA:value});
+      axios.put("/list", data);
     }
   },
   async created() {
@@ -111,7 +85,8 @@ const GlobalApp = {
           _id: element._id, 
           text: element.text , 
           task: element.task,
-          dateA: element.dateA
+          dateA: element.dateA,
+          dateC: element.dateC
         };
       });
     } catch (err) {
