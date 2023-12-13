@@ -22,9 +22,8 @@ const GlobalApp = {
     async add() {
       var defaultTitle = "Element " + (this.elements.length + 1);
       var defaultTaskDescription = "Enter task description";
-      var defaultDateText = "Enter date";
+      var defaultDateText = "mm/dd/yyyy";
       try {
-
         const response = await axios.post("/list", { 
           text: defaultTitle, 
           task: defaultTaskDescription,

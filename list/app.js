@@ -12,8 +12,7 @@ mongoose.connect("mongodb://localhost/mydb_test");
 var listSchema = mongoose.Schema({
  text : String,
  task : String,
- dateA : String
-
+ dateA : String,
 });
 
 var List = mongoose.model("elements", listSchema);
@@ -35,6 +34,7 @@ app.use('/users', usersRouter);
 app.post("/list", async function(req, res) {
   var text = req.body.text;
   var task = req.body.task;
+  //var dateA = new Date(req.body.dateA);
   var dateA = req.body.dateA;
   console.log(text);
 try {
@@ -63,6 +63,7 @@ app.put("/list", async function(req, res) {
     var id = req.body.id;
     var text = req.body.text;
     var task = req.body.task;
+    //var dateA = new Date(req.body.dateA);
     var dateA = req.body.dateA;
     
     await List.updateOne({ _id: id }, { text: text , task: task, dateA: dateA}).exec();
